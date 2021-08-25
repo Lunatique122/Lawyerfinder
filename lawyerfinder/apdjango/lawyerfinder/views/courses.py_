@@ -1,0 +1,232 @@
+from django.shortcuts import render, get_object_or_404
+from rest_framework import viewsets, permissions
+from rest_framework.views import APIView
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from django.conf import settings
+import datetime
+from django.core.mail import BadHeaderError, send_mail
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
+# import base64
+from django.http import JsonResponse
+from rest_framework.authtoken.models import Token
+
+from lawyerfinder.models import Courses, CustomUser
+from lawyerfinder.serializers import *
+from lawyerfinder.permissions import ReadOnly
+from rest_framework_jwt import authentication
+
+from django.contrib.auth.decorators import login_required
+# from django.contrib.auth.mixins import UserPassesTestMixin
+import logging
+
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+import os.path
+# from fpdf import FPDF
+from django.http.response import FileResponse, Http404
+from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
+
+from datetime import datetime
+logger = logging.getLogger('lawyerfinder')
+
+class CourseModelViewSet(viewsets.ModelViewSet):
+    # get_queryset = CustomUser.objects.all()
+    serializer_class = CourseSerializer
+
+    def create(self, request):
+    # def post(self, request, *args, **kwargs):
+        #TODO password confirmation
+        data = request.data.get
+        title = data('title', None)
+        image = data('image', None)
+        video = data('video', None)
+        category = data('category', None)
+        subcategory = data('subcategory', None)
+        short_desc = data('short_desc', None)
+        user_count = data('user_count', None)
+        teacher = data('teacher', None)
+        language = data('language', None)
+        cost = data('cost', None)
+        long_desc = data('long_desc', None)
+        target_audience = data('target_audience', None)
+        goal = data('goal', None)
+        sections = data('sections', None)
+        creation_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        logger.warning('creation date', creation_date)
+        # sections = request.POST.getlist('sections[]')
+
+        teacher = CustomUser.objects.get(user_id=teacher)
+        course = Courses(
+                            # modified_at=now.strftime("%Y-%m-%d %H:%M:%S"),
+                            title = title,
+                            image = image,
+                            video = video,
+                            category = category,
+                            subcategory = subcategory,
+                            short_desc = short_desc,
+                            long_desc = long_desc,
+                            user_count = 100,
+                            teacher = teacher,
+                            language = language,
+                            cost = cost,
+                            target_audience = target_audience,
+                            goal = goal,
+                            creation_date = creation_date,
+                        )
+        course.save()
+
+        return Response({
+            "course_id": course.course_id
+        })
+
+    # def post(self, request, *args, **kwargs):
+    #     #TODO password confirmation
+    #     title = request.POST['title']
+    #     image = request.POST['image']
+    #     video = request.POST['video']
+    #     desc = request.POST['description']
+    #     # user_count = request.POST['participant_count']
+    #     teacher = request.POST['teacher']
+    #     language = request.POST['language']
+    #     cost = request.POST['cost']
+    #     long_desc = request.POST['long_desc']
+    #     target_audience = request.POST['target_audience']
+    #     goal = request.POST['goal']
+    #     # sections = request.POST['sections']
+    #     sections = request.POST.getlist('sections[]')
+    #     created_course = Courses.objects.create(
+    #                                         # modified_at=now.strftime("%Y-%m-%d %H:%M:%S"),
+    #                                         title = title,
+    #                                         image = image,
+    #                                         video = video,
+    #                                         short_desc = short_desc,
+    #                                         long_desc = long_desc,
+    #                                         # user_count = 0,
+    #                                         teacher = teacher,
+    #                                         language = language,
+    #                                         cost = cost,
+    #                                         target_audience = target_audience,
+    #                                         goal = goal,
+    #                                     )
+    #     if created_course:
+    #         for s in sections:
+    #             created_section = Sections.objects.create(
+    #                                                 # modified_at=now.strftime("%Y-%m-%d %H:%M:%S"),
+    #                                                 course = created_course.pk,
+    #                                                 title = s.title,
+    #                                                 image = image,
+    #                                                 video = video,
+    #                                                 short_desc = short_desc,
+    #                                                 long_desc = long_desc,
+    #                                                 # user_count = 0,
+    #                                                 # target_audience = target_audience,
+    #                                                 goal = goal,
+    #                                                 duration = duration,
+    #                                             )
+    #         return Response({
+    #             "user": created_course
+    #         })
+    #     return Response
+
+    def put(self, request, *args, **kwargs):
+        # kwargs['partial'] = True
+        # return super().update(request, *args, **kwargs)
+        post_data = request.data
+        user_id = post_data.get("user_id")
+        if user_id != "" and user_id is not None:
+            updated_transfer = CustomUser.objects.filter(user_id=post_data.get("user_id"))\
+                                            .update(
+                                                # modified_at=now.strftime("%Y-%m-%d %H:%M:%S"),
+                                                first_name=post_data.get("first_name"),
+                                                last_name=post_data.get("last_name"),
+                                            )
+            if updated_transfer:
+                return Response({
+                    "success": True,
+                })
+        return Response({
+            "status": False
+        })
+
+    def delete(self,request, *args, **kwargs):
+        id = self.kwargs["id"]
+        course = get_object_or_404(Courses, course_id=id)
+        course.delete()
+        return Response(status=204)
+
+    def get_queryset(self):
+        # serializer_class = serializers.CourseSerializer
+        # filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
+        # filter_backends = [SearchFilter]
+        queryset = Courses.objects.all()
+        data = self.request.data.get
+        id = data('id', None)
+        title = data('title', None)
+        start_date = data('start_date', None)
+        end_date = data('end_date', None)
+        category = data('category', None)
+        subcategory = data('subcategory', None)
+        # short_desc = data('short_desc', None)
+        user_count = data('user_count', None)
+        teacher = data('teacher', None)
+        language = data('language', None)
+        cost = data('cost', None)
+        # long_desc = data('long_desc', None)
+        # target_audience = data('target_audience', None)
+        # goal = data('goal', None)
+
+        id_sort = data('id_sort', None)
+        category_sort = data('category_sort', None)
+        subcategory_sort = data('subcategory_sort', None)
+        creation_date_sort = data('creation_date_sort', None)
+
+        if id:
+            queryset = queryset.filter(course_id=id)
+        if title:
+            queryset = queryset.filter(title__contains=title)
+        if category:
+            queryset = queryset.filter(category=category)
+        if subcategory:
+            queryset = queryset.filter(subcategory=subcategory)
+        if start_date:
+            queryset = queryset.filter(creation_date__gte=start_date)
+        if end_date:
+            queryset = queryset.filter(creation_date__lte=end_date)
+    
+        if id_sort:
+            queryset = queryset.order_by(course_id=id_sort)
+        if category_sort:
+            queryset = queryset.order_by(category=category_sort)
+        if subcategory_sort:
+            queryset = queryset.order_by(subcategory=subcategory_sort)
+        if creation_date_sort:
+            queryset = queryset.order_by(creation_date=creation_date_sort)
+
+        return list(queryset.order_by('-creation_date'))
+
+class CourseCountView(APIView):
+    """
+    A view that returns the count of active users.
+    """
+    api_view = ('GET', )
+    renderer_classes = (JSONRenderer, )
+
+    def get(self, request):
+        data = self.request.GET
+        objs = Courses.objects
+        count = objs.count()
+        declared = objs.filter(last_status='201').count()
+        to_rectify = objs.filter(last_status='ERR').count()
+        pending = count - declared
+        to_declare = pending - to_rectify  #Equivalent to status OK
+        
+        content = {
+            'count': count,
+            'declared': declared,
+            'pending': pending,
+            'to_rectify': to_rectify,
+            'to_declare': to_declare
+        }
+        return Response(content)
