@@ -17,34 +17,30 @@ from django.contrib.auth.models import (
 )
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, first_name, last_name, username, email, is_teacher, is_learner, password=None):
+    def create_user(self, first_name, last_name, username, email, password=None):
         """
         Creates and saves a User with the given email, date of
         birth and password.
         # """
-        # if not is_teacher:
-        #     raise ValueError('Users must have a is_teacher')
+        # if not :
+        #     raise ValueError('Users must have a ')
 
         user = self.model(
             first_name=first_name,
             last_name=last_name,
             username=username,
             email=email,
-            is_teacher=is_teacher,
-            is_learner=is_learner,
             is_active=False,
         )
 
         # user.is_superuser = False
         user.is_admin = False
         # user.is_active = True
-        # user.is_teacher = is_teacher
-        # user.is_learner = is_learner
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, first_name, last_name, username, email, is_teacher, is_learner, password=None):
+    def create_superuser(self, first_name, last_name, username, email, password=None):
         """
         Creates and saves a superuser with the given email, date of
         birth and password.
@@ -59,15 +55,11 @@ class CustomUserManager(BaseUserManager):
             last_name,
             username,
             email,
-            is_teacher,
-            is_learner,
             password,
         )
         # user.is_superuser = True
         user.is_admin = True
         # user.is_active = True
-        # user.is_teacher = False 
-        # user.is_learner = False
         user.save(using=self._db)
         return user
 
@@ -124,8 +116,6 @@ class CustomUserManager(BaseUserManager):
 class CustomUser(AbstractBaseUser):
     user_id = models.AutoField(primary_key=True)
     is_active = models.BooleanField(default=False, blank=False, null=False)
-    is_teacher = models.BooleanField(default=False, blank=False, null=False)
-    is_learner = models.BooleanField(default=False, blank=False, null=False)
     is_admin = models.BooleanField(default=False, blank=False, null=False)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
@@ -148,7 +138,7 @@ class CustomUser(AbstractBaseUser):
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['first_name', 'last_name', 'email', 'is_teacher', 'is_learner']
+    REQUIRED_FIELDS = ['first_name', 'last_name', 'email']
 
     # class Meta:
     #     app_label = 'swiftapp.CustomUser'
@@ -183,8 +173,8 @@ class CustomUser(AbstractBaseUser):
         return self.is_admin
 
     # @property
-    # def is_teacher(self):
-    #     return self.is_teacher
+    # def (self):
+    #     return self.
 
     # @property
     # def is_learner(self):

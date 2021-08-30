@@ -61,8 +61,6 @@ class UserModelViewSet(viewsets.ModelViewSet):
                                         first_name=first_name,
                                         last_name=last_name,
                                         email=email,
-                                        is_teacher=is_teacher,
-                                        is_learner=is_learner,
                                         password=make_password(password),
                                         )
         if user:
@@ -194,7 +192,7 @@ class UserModelViewSet(viewsets.ModelViewSet):
             # username = request.POST.get('username', None)
             # first_name = request.POST.get('first_name', None)
             # last_name = request.POST.get('last_name', None)
-            # is_teacher = request.POST.get('is_teacher', None)
+            #  = request.POST.get('', None)
             # is_learner = request.POST.get('is_learner', None)
             # password1 = request.POST.get('password1', None)
             # password2 = request.POST.get('password2', None)
@@ -204,7 +202,7 @@ class UserModelViewSet(viewsets.ModelViewSet):
             # user = CustomUser.objects.create_user(username=username,
             #                                       first_name=first_name,
             #                                       last_name=last_name,
-            #                                       is_teacher=is_teacher,
+            #                                       =,
             #                                       is_learner=is_learner)
             # user.set_password(password1)
             # user.save()

@@ -12,8 +12,6 @@ CREATE TABLE users
   user_id int GENERATED ALWAYS AS IDENTITY,
   -- type varchar(10)   NOT NULL, --teacher, learner, admin
   is_active boolean not null default false,
-  is_teacher boolean not null default false,
-  is_learner boolean not null default false,
   is_admin boolean not null default false,
   -- is_superuser boolean not null,
   first_name varchar(30) NOT NULL,

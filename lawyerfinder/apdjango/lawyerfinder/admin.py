@@ -5,6 +5,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from .models import Lawyers
 from .models import CustomUser
+from admin_comments.admin import CommentInline
 
 
 class UserCreationForm(forms.ModelForm):
@@ -43,7 +44,7 @@ class UserChangeForm(forms.ModelForm):
 
     class Meta:
         model = CustomUser
-        fields = ('username', 'first_name','last_name', 'password', 'is_teacher', 'is_learner', 'is_active', 'is_admin')
+        fields = ('username', 'first_name','last_name', 'password', 'is_active', 'is_admin')
 
     def clean_password(self):
         # Regardless of what the user provides, return the initial value.
@@ -60,12 +61,12 @@ class UserAdmin(BaseUserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ('username', 'first_name','last_name', 'is_teacher', 'is_learner', 'is_admin', 'is_active')
+    list_display = ('username', 'first_name','last_name', 'is_admin', 'is_active')
     list_filter = ('is_admin',)
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
         ('Personal info', {'fields': ('first_name','last_name',)}),
-        ('Permissions', {'fields': ('is_admin', 'is_active', 'is_teacher')}),
+        ('Permissions', {'fields': ('is_admin', 'is_active', )}),
     )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
     # overrides get_fieldsets to use this attribute when creating a user.
@@ -75,16 +76,25 @@ class UserAdmin(BaseUserAdmin):
             'fields': ('username', 'first_name','last_name', 'password1', 'password2'),
         }),
     )
-    search_fields = ('username','first_name','last_name', 'is_active', 'is_teacher')
+    search_fields = ('username','first_name','last_name', 'is_active',)
     ordering = ('username','first_name','last_name',)
     filter_horizontal = ()
 
+    permissions = (("can_read", "Can read"),)
+
+    def has_add_permission(self, request, obj=None):
+        return request.user.is_admin
+
+    def has_delete_permission(self, request, obj=None):
+        return request.user.is_admin
 
 # Now register the new UserAdmin...
 admin.site.register(CustomUser, UserAdmin)
 # ... and, since we're not using Django's built-in permissions,
 # unregister the Group model from admin.
 admin.site.unregister(Group)
+
+
 
 class  lawyerAdmin(admin.ModelAdmin):
     # The forms to add and change user instances
@@ -99,7 +109,7 @@ class  lawyerAdmin(admin.ModelAdmin):
     # fieldsets = (
     #     (None, {'fields': ('username', 'password')}),
     #     ('Personal info', {'fields': ('first_name','last_name',)}),
-    #     ('Permissions', {'fields': ('is_admin', 'is_active', 'is_teacher')}),
+    #     ('Permissions', {'fields': ('is_admin', 'is_active', )}),
     # )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
     # overrides get_fieldsets to use this attribute when creating a user.
@@ -114,4 +124,19 @@ class  lawyerAdmin(admin.ModelAdmin):
     filter_horizontal = ()
 
 
+
+    model = Lawyers
+    inlines = [CommentInline, ]
+
+    permissions = (("can_read", "Can read"),)
+
+    def has_add_permission(self, request, obj=None):
+        return request.user.is_admin
+
+
+    def has_delete_permission(self, request, obj=None):
+        return request.user.is_admin
+
 admin.site.register(Lawyers, lawyerAdmin)
+
+

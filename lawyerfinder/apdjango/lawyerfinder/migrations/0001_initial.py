@@ -46,8 +46,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('user_id', models.AutoField(primary_key=True, serialize=False)),
                 ('is_active', models.BooleanField(default=False)),
-                ('is_teacher', models.BooleanField(default=False)),
-                ('is_learner', models.BooleanField(default=False)),
+                # ('', models.BooleanField(default=False)),
+                # ('is_learner', models.BooleanField(default=False)),
                 ('is_admin', models.BooleanField(default=False)),
                 ('first_name', models.CharField(max_length=30)),
                 ('last_name', models.CharField(max_length=30)),

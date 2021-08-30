@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'lawyerfinder',
     'rest_framework',
     'rest_framework_jwt',
+    'admin_comments',
     # 'rest_framework_simplejwt',
     #'<corsheaders',
     #'sslserver',

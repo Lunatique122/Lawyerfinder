@@ -22,7 +22,7 @@ from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 # from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('', admin.site.urls),
     path(r'', include('lawyerfinder.urls')),
     path('api/auth/login', LoginView.as_view(), name='login'),
     path('api/auth/token/refresh', refresh_jwt_token),
