@@ -197,7 +197,26 @@ class Lawyers(models.Model):
     city = models.CharField(max_length=200)
     phone = models.IntegerField()
     score = models.IntegerField()
+    creation_date = models.DateTimeField(auto_now_add=True)
+    update_date = models.DateTimeField(auto_now=True)
+
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'lawyers'
+
+
+
+class Review(models.Model):
+    id = models.AutoField(primary_key=True)
+    lawyer = models.ForeignKey('Lawyers', models.DO_NOTHING)
+    title = models.CharField(max_length=200)
+    content = models.CharField(max_length=2000)
+    score = models.FloatField()
+    creation_date = models.DateTimeField(auto_now_add=True)
+    update_date = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        managed = True
+        db_table = 'reviews'
+

@@ -7,15 +7,3 @@
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
 
-
-class Lawyers(models.Model):
-    lawyer = models.CharField(primary_key=True, max_length=200)
-    field = models.CharField(max_length=200)
-    address = models.CharField(max_length=200)
-    city = models.CharField(max_length=200)
-    phone = models.IntegerField()
-    score = models.IntegerField()
-
-    class Meta:
-        managed = False
-        db_table = 'lawyers'

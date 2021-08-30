@@ -12,6 +12,36 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
+            name='Review',
+            fields=[
+                ('id', models.AutoField(primary_key=True, serialize=False)),
+                #('is_active', models.BooleanField(default=False)),
+                #('researchgate', models.CharField(blank=True, max_length=30, null=True)),
+                ('lawyer', models.ForeignKey('Lawyers', models.DO_NOTHING)),
+                ('title', models.CharField(blank=True, max_length=200, null=True)),
+                ('content', models.CharField(blank=True, max_length=2000, null=True)),
+            ],
+            options={
+                'db_table': 'reviews',
+                'managed': False,
+            },
+        ),
+        migrations.CreateModel(
+            name='Lawyers',
+            fields=[
+                ('lawyer', models.CharField(max_length=200, primary_key=True, serialize=False)),
+                ('field', models.CharField(max_length=200)),
+                ('address', models.CharField(max_length=200)),
+                ('city', models.CharField(max_length=200)),
+                ('phone', models.IntegerField()),
+                ('score', models.IntegerField()),
+            ],
+            options={
+                'db_table': 'lawyers',
+                'managed': False,
+            },
+        ),
+        migrations.CreateModel(
             name='CustomUser',
             fields=[
                 ('user_id', models.AutoField(primary_key=True, serialize=False)),
@@ -39,21 +69,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'users',
-                'managed': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='Lawyers',
-            fields=[
-                ('lawyer', models.CharField(max_length=200, primary_key=True, serialize=False)),
-                ('field', models.CharField(max_length=200)),
-                ('address', models.CharField(max_length=200)),
-                ('city', models.CharField(max_length=200)),
-                ('phone', models.IntegerField()),
-                ('score', models.IntegerField()),
-            ],
-            options={
-                'db_table': 'lawyers',
                 'managed': False,
             },
         ),
